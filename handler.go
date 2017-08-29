@@ -1,4 +1,4 @@
-package swaggerui
+package gographiql
 
 import (
 	"log"
@@ -22,11 +22,11 @@ func New(config *Config) http.Handler {
 	conf := rice.Config{
 		LocateOrder: []rice.LocateMethod{rice.LocateEmbedded, rice.LocateAppended, rice.LocateFS},
 	}
-	static, err := conf.FindBox("static")
+	static, err := conf.FindBox("graphiql")
 	if err != nil {
 		log.Fatalf("error opening static: %s\n", err)
 	}
-	viewBox, err := rice.FindBox("view")
+	viewBox, err := rice.FindBox("graphiql-template")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,4 +1,4 @@
-package swaggerui
+package gographiql
 
 import (
 	"github.com/GeertJohan/go.rice/embedded"
@@ -34,8 +34,8 @@ func init() {
 	dir1.ChildDirs = []*embedded.EmbeddedDir{}
 
 	// register embeddedBox
-	embedded.RegisterEmbeddedBox(`static`, &embedded.EmbeddedBox{
-		Name: `static`,
+	embedded.RegisterEmbeddedBox(`graphiql`, &embedded.EmbeddedBox{
+		Name: `graphiql`,
 		Time: time.Unix(1503995128, 0),
 		Dirs: map[string]*embedded.EmbeddedDir{
 			"": dir1,
@@ -70,8 +70,8 @@ func init() {
 	dir4.ChildDirs = []*embedded.EmbeddedDir{}
 
 	// register embeddedBox
-	embedded.RegisterEmbeddedBox(`view`, &embedded.EmbeddedBox{
-		Name: `view`,
+	embedded.RegisterEmbeddedBox(`graphiql-template`, &embedded.EmbeddedBox{
+		Name: `graphiql-template`,
 		Time: time.Unix(1503996092, 0),
 		Dirs: map[string]*embedded.EmbeddedDir{
 			"": dir4,

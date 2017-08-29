@@ -1,4 +1,4 @@
-package swaggerui
+package gographiql
 
 import (
 	"testing"
