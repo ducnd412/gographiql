@@ -6,9 +6,11 @@ import (
 	"github.com/GeertJohan/go.rice"
 	"net/http"
 	"strings"
+	"fmt"
 )
 
 type Config struct {
+	BasePath   string
 	GraphqlUrl string
 	OauthScope string
 }
@@ -16,6 +18,7 @@ type Handler struct {
 	config        *Config
 	staticHandler http.Handler
 	template      *template.Template
+	static        *rice.Box
 }
 
 func New(config *Config) http.Handler {
@@ -43,6 +46,7 @@ func New(config *Config) http.Handler {
 
 	return &Handler{
 		config:        config,
+		static:        static,
 		staticHandler: http.FileServer(static.HTTPBox()),
 		template:      indexTemplate,
 	}
@@ -51,20 +55,17 @@ func New(config *Config) http.Handler {
 
 func (s *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	upath := r.URL.Path
-	basePath := upath[0:strings.LastIndex(upath, "/")]
-	if strings.HasSuffix(upath, ".png") || strings.HasSuffix(upath, ".css") || strings.HasSuffix(upath, ".js") {
-		if p := strings.TrimPrefix(r.URL.Path, basePath); len(p) < len(r.URL.Path) {
-			r.URL.Path = p
+	urlPath := r.URL.Path
+	prefix := strings.TrimPrefix(r.URL.Path, s.config.BasePath)
+	fmt.Println(urlPath, prefix)
+	if file, err := s.static.Open(prefix); err == nil {
+		if f, e := file.Stat(); e == nil && !f.IsDir() {
+			r.URL.Path = prefix
 			s.staticHandler.ServeHTTP(w, r)
+			return
 		}
-		return
 	}
-	data := map[string]interface{}{
-		"BasePath": basePath,
-		"Config":   s.config,
-	}
-	error := s.template.Execute(w, data)
+	error := s.template.Execute(w, s.config)
 	if error != nil {
 		log.Fatal(error)
 	}

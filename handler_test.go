@@ -10,11 +10,12 @@ import (
 func Test(t *testing.T) {
 	swaggerHandler := New(&Config{
 
+		BasePath:   "/graphql",
 		GraphqlUrl: "http://localhost:8083/graphql",
 		OauthScope: "scope",
 	})
 
-	http.Handle("/swagger/", swaggerHandler)
+	http.Handle("/graphql/", swaggerHandler)
 	go func() {
 		fmt.Println("Serving files on :8082, press ctrl-C to exit")
 		err := http.ListenAndServe(":8082", nil)
