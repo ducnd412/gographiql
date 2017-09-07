@@ -12,6 +12,18 @@
         #graphiql {
             height: 100vh;
         }
+
+        .jwt-token {
+            background: linear-gradient(#f7f7f7, #e2e2e2);
+            border-bottom: 1px solid #d0d0d0;
+            font-family: system, -apple-system, 'San Francisco', '.SFNSDisplay-Regular', 'Segoe UI', Segoe, 'Segoe WP', 'Helvetica Neue', helvetica, 'Lucida Grande', arial, sans-serif;
+            padding: 7px 14px 6px;
+            font-size: 14px;
+        }
+
+        #jwt-token {
+            width: 200px;
+        }
     </style>
 
     <!--
@@ -36,6 +48,7 @@
 
 </head>
 <body>
+<div class="jwt-token">JWT Token <input id="jwt-token" placeholder="JWT Token goes here"> <button id="set-token" onclick="localStorage.setItem('access_token',document.getElementById('jwt-token').value)">Set token</button> </div>
 <div id="graphiql">Loading...</div>
 <script>
     /**
@@ -93,18 +106,29 @@
         history.replaceState(null, null, newSearch);
     }
 
+    document.getElementById('jwt-token').value = localStorage.getItem('access_token');
     // Defines a GraphQL fetcher using the fetch API. You're not required to
     // use fetch, and could instead implement graphQLFetcher however you like,
     // as long as it returns a Promise or Observable.
     function graphQLFetcher(graphQLParams) {
+        const jwtToken = document.getElementById('jwt-token').value;
         // This example expects a GraphQL server at the path /graphql.
         // Change this to point wherever you host your GraphQL server.
-        return fetch('{{.GraphqlUrl}}', {
-            method: 'post',
-            headers: {
+        var headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+        if (jwtToken) {
+            localStorage.setItem('access_token', jwtToken);
+            headers = {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-            },
+                'Authorization': jwtToken ? `Bearer ${jwtToken}` : null
+            };
+        }
+        return fetch('{{.GraphqlUrl}}', {
+            method: 'post',
+            headers: headers,
             body: JSON.stringify(graphQLParams),
             credentials: 'include',
         }).then(function (response) {
